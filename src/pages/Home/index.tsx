@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Header } from '../../components/Header'
 
-import { ScrollView } from 'react-native'
+import { ScrollView, ActivityIndicator } from 'react-native'
 
 import { Feather } from '@expo/vector-icons'
 
@@ -17,15 +17,20 @@ import {
 } from './style'
 import { SliderItem } from '../../components/SliderItem'
 import { api, key } from '../../services/api'
-import { getListMovies } from '../../utils/movie'
+import { getListMovies, randomBanner } from '../../utils/movie'
+import App from '../../../App'
 
 export const Home: React.FC = () => {
   const [nowMovies, setNowMovies] = useState<App.Movies[]>([])
   const [popularMovies, setPopularMovies] = useState<App.Movies[]>([])
   const [topMovies, setTopMovies] = useState<App.Movies[]>([])
+  const [bannerMovie, setBannerMovie] = useState<App.Movies>()
+
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const isActive = true
+    let isActive = true
+    const ac = new AbortController()
 
     const getMovies = async () => {
       const [nowData, popularData, topData] = await Promise.all([
@@ -51,16 +56,37 @@ export const Home: React.FC = () => {
           }
         })
       ])
-      const nowList = getListMovies(10, nowData.data.results)
-      const popularList = getListMovies(5, popularData.data.results)
-      const topList = getListMovies(5, topData.data.results)
-      setNowMovies(nowList)
-      setPopularMovies(popularList)
-      setTopMovies(topList)
+
+      if (isActive) {
+        const nowList = getListMovies(10, nowData.data.results)
+        const popularList = getListMovies(5, popularData.data.results)
+        const topList = getListMovies(5, topData.data.results)
+
+        setBannerMovie(nowData.data.results[randomBanner(nowData.data.results)])
+
+        setNowMovies(nowList)
+        setPopularMovies(popularList)
+        setTopMovies(topList)
+
+        setLoading(false)
+      }
     }
 
     getMovies()
+
+    return () => {
+      isActive = false
+      ac.abort() // cancela as ações da página (req)
+    }
   }, [])
+
+  if (loading) {
+    return (
+      <Container style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#fff" />
+      </Container>
+    )
+  }
 
   return (
     <Container>
@@ -77,7 +103,7 @@ export const Home: React.FC = () => {
           <Banner
             resizeMethod="resize"
             source={{
-              uri: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=725&q=80'
+              uri: `https://image.tmdb.org/t/p/original/${bannerMovie?.poster_path}`
             }}
           />
         </BannerButton>
