@@ -24,6 +24,7 @@ import Stars from 'react-native-stars'
 import { api, key } from '../../services/api'
 import Genre from '../../components/Genre'
 import { ModalLink } from '../../components/ModalLink'
+import { saveMovie, hasMovie, deleteMovie } from '../../utils/storage'
 
 export const Detail: React.FC = () => {
   const navigation = useNavigation()
@@ -31,6 +32,19 @@ export const Detail: React.FC = () => {
 
   const [movie, setMovie] = useState<App.Movies>({})
   const [openLink, setOpenLink] = useState(false)
+  const [isFavoriteMovie, setIsFavoriteMovie] = useState(false)
+
+  const favoriteMovie = async (movie: App.Movies) => {
+    if (isFavoriteMovie) {
+      if (movie.id) {
+        deleteMovie(movie.id)
+        setIsFavoriteMovie(false)
+      }
+    } else {
+      await saveMovie('@reactflix', movie)
+      setIsFavoriteMovie(true)
+    }
+  }
 
   useEffect(() => {
     let isActive = true
@@ -43,9 +57,12 @@ export const Detail: React.FC = () => {
             language: 'pt-BR'
           }
         })
-        .then((res) => {
+        .then(async (res) => {
           if (isActive) {
             setMovie(res.data)
+
+            const isFavorite = await hasMovie(res.data)
+            setIsFavoriteMovie(isFavorite)
           }
         })
         .catch((err) => console.log(err))
@@ -67,8 +84,12 @@ export const Detail: React.FC = () => {
         <HeaderButton onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={28} color="#fff" />
         </HeaderButton>
-        <HeaderButton>
-          <Ionicons name="bookmark" size={28} color="#fff" />
+        <HeaderButton onPress={() => favoriteMovie(movie)}>
+          {isFavoriteMovie ? (
+            <Ionicons name="bookmark" size={28} color="#fff" />
+          ) : (
+            <Ionicons name="bookmark-outline" size={28} color="#fff" />
+          )}
         </HeaderButton>
       </Header>
       <Banner
