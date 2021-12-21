@@ -113,7 +113,7 @@ export const Home: React.FC = () => {
       <Header title="Reactfilm" />
       <SearchContainer>
         <Input
-          placeholder="Ex Vingadores"
+          placeholder="Pesquisar"
           placeholderTextColor="#ddd"
           value={input}
           onChangeText={(text) => setInput(text)}
