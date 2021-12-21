@@ -11,5 +11,6 @@ declare namespace App {
     ]
     overview?: string
     homepage?: string
+    release_date?: string
   }
 }

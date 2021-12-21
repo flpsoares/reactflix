@@ -30,6 +30,7 @@ export const Home: React.FC = () => {
   const [popularMovies, setPopularMovies] = useState<App.Movies[]>([])
   const [topMovies, setTopMovies] = useState<App.Movies[]>([])
   const [bannerMovie, setBannerMovie] = useState<App.Movies>()
+  const [input, setInput] = useState('')
 
   const [loading, setLoading] = useState(true)
 
@@ -93,6 +94,12 @@ export const Home: React.FC = () => {
     })
   }
 
+  const handleSearchMovie = () => {
+    if (input === '') return
+    navigation.navigate('Search', { name: input })
+    setInput('')
+  }
+
   if (loading) {
     return (
       <Container style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -105,8 +112,13 @@ export const Home: React.FC = () => {
     <Container>
       <Header title="Reactflix" />
       <SearchContainer>
-        <Input placeholder="Ex Vingadores" placeholderTextColor="#ddd" />
-        <SearchButton>
+        <Input
+          placeholder="Ex Vingadores"
+          placeholderTextColor="#ddd"
+          value={input}
+          onChangeText={(text) => setInput(text)}
+        />
+        <SearchButton onPress={handleSearchMovie}>
           <Feather name="search" size={30} color="#fff" />
         </SearchButton>
       </SearchContainer>
