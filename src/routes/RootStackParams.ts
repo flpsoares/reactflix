@@ -4,4 +4,5 @@ export type RootStackParamsList = {
   Search: {
     name: string
   }
+  Movies: undefined
 }

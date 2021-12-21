@@ -110,7 +110,7 @@ export const Home: React.FC = () => {
 
   return (
     <Container>
-      <Header title="Reactflix" />
+      <Header title="Reactfilm" />
       <SearchContainer>
         <Input
           placeholder="Ex Vingadores"
