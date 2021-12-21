@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Header } from '../../components/Header'
 
 import { ScrollView, ActivityIndicator } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { RootStackParamsList } from '../../routes/RootStackParams'
+
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import { Feather } from '@expo/vector-icons'
 
@@ -18,7 +22,8 @@ import {
 import { SliderItem } from '../../components/SliderItem'
 import { api, key } from '../../services/api'
 import { getListMovies, randomBanner } from '../../utils/movie'
-import App from '../../../App'
+
+type DetailScreenProps = NativeStackNavigationProp<RootStackParamsList, 'Home'>
 
 export const Home: React.FC = () => {
   const [nowMovies, setNowMovies] = useState<App.Movies[]>([])
@@ -27,6 +32,8 @@ export const Home: React.FC = () => {
   const [bannerMovie, setBannerMovie] = useState<App.Movies>()
 
   const [loading, setLoading] = useState(true)
+
+  const navigation = useNavigation<DetailScreenProps>()
 
   useEffect(() => {
     let isActive = true
@@ -80,6 +87,12 @@ export const Home: React.FC = () => {
     }
   }, [])
 
+  const navigateDetailsPage = (movie: App.Movies) => {
+    navigation.navigate('Detail', {
+      id: movie.id
+    })
+  }
+
   if (loading) {
     return (
       <Container style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -99,7 +112,10 @@ export const Home: React.FC = () => {
       </SearchContainer>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Title>Em Cartaz</Title>
-        <BannerButton activeOpacity={0.8} onPress={() => alert('Teste')}>
+        <BannerButton
+          activeOpacity={0.8}
+          onPress={() => (bannerMovie ? navigateDetailsPage(bannerMovie) : null)}
+        >
           <Banner
             resizeMethod="resize"
             source={{
@@ -111,7 +127,9 @@ export const Home: React.FC = () => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={nowMovies}
-          renderItem={({ item }: App.Movies | any) => <SliderItem data={item} />}
+          renderItem={({ item }: App.Movies | any) => (
+            <SliderItem data={item} navigatePage={() => navigateDetailsPage(item)} />
+          )}
           keyExtractor={(item, index) => String(index)}
         />
         <Title>Populares</Title>
@@ -119,7 +137,9 @@ export const Home: React.FC = () => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={popularMovies}
-          renderItem={({ item }: App.Movies | any) => <SliderItem data={item} />}
+          renderItem={({ item }: App.Movies | any) => (
+            <SliderItem data={item} navigatePage={() => navigateDetailsPage(item)} />
+          )}
           keyExtractor={(item, index) => String(index)}
         />
         <Title>Mais votados</Title>
@@ -127,7 +147,9 @@ export const Home: React.FC = () => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={topMovies}
-          renderItem={({ item }: App.Movies | any) => <SliderItem data={item} />}
+          renderItem={({ item }: App.Movies | any) => (
+            <SliderItem data={item} navigatePage={() => navigateDetailsPage(item)} />
+          )}
           keyExtractor={(item, index) => String(index)}
         />
       </ScrollView>
