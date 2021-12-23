@@ -8,8 +8,8 @@ export const Title = styled.Text`
   color: white;
   font-size: 22px;
   font-weight: bold;
-  padding: 8px 14px;
-  margin-top: 8px;
+  padding: 0 14px;
+  /* margin-top: 8px; */
 `
 
 export const Header = styled.View`
@@ -34,6 +34,7 @@ export const HeaderButton = styled.TouchableOpacity`
 export const Banner = styled.Image`
   width: 100%;
   height: 350px;
+  margin-bottom: 12px;
   border-bottom-left-radius: 70px;
   border-bottom-right-radius: 70px;
 `
@@ -54,7 +55,7 @@ export const ButtonLink = styled.TouchableOpacity`
 export const ContentArea = styled.View`
   flex-direction: row;
   align-items: center;
-  padding: 0 14px;
+  padding: 4px 14px;
   justify-content: space-between;
 `
 
@@ -77,4 +78,27 @@ export const Description = styled.Text`
   padding-bottom: 30px;
   line-height: 20px;
   color: white;
+`
+
+export const WhereWatchContainer = styled.View`
+  width: 100%;
+  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
+`
+
+export const WhereWhatch = styled.TouchableOpacity`
+  background-color: #e72f49;
+  margin: 0 14px;
+  height: 30px;
+  width: 200px;
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+`
+
+export const WhereWhatchTitle = styled.Text`
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
 `

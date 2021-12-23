@@ -10,29 +10,39 @@ import {
   ContentArea,
   ListGenres,
   Rate,
-  Description
+  Description,
+  WhereWhatch,
+  WhereWhatchTitle,
+  WhereWatchContainer
 } from './style'
 import { Feather, Ionicons } from '@expo/vector-icons'
 
 import { ScrollView, Modal } from 'react-native'
 
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
-import { RootStackParamsList } from '../../routes/RootStackParams'
-
 // @ts-ignore
 import Stars from 'react-native-stars'
-import { api, key } from '../../services/api'
 import Genre from '../../components/Genre'
 import { ModalLink } from '../../components/ModalLink'
 import { saveMovie, hasMovie, deleteMovie } from '../../utils/storage'
 
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native'
+import { RootStackParamsList } from '../../routes/RootStackParams'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import MoviesApi from '../../services/api/MoviesApi'
+
+type PlatformScreenProps = NativeStackNavigationProp<RootStackParamsList, 'Detail'>
+
 export const Detail: React.FC = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation<PlatformScreenProps>()
   const route = useRoute<RouteProp<RootStackParamsList, 'Detail'>>()
 
   const [movie, setMovie] = useState<App.Movies>({})
   const [openLink, setOpenLink] = useState(false)
   const [isFavoriteMovie, setIsFavoriteMovie] = useState(false)
+
+  const navigateToPlatforms = () => {
+    navigation.navigate('Platform', { id: movie.id })
+  }
 
   const favoriteMovie = async (movie: App.Movies) => {
     if (isFavoriteMovie) {
@@ -49,23 +59,20 @@ export const Detail: React.FC = () => {
   useEffect(() => {
     let isActive = true
     const ac = new AbortController()
-    const getMovie = async () => {
-      await api
-        .get(`/movie/${route.params?.id}`, {
-          params: {
-            api_key: key,
-            language: 'pt-BR'
-          }
-        })
-        .then(async (res) => {
-          if (isActive) {
-            setMovie(res.data)
 
-            const isFavorite = await hasMovie(res.data)
-            setIsFavoriteMovie(isFavorite)
-          }
-        })
-        .catch((err) => console.log(err))
+    const getMovie = async () => {
+      if (route.params.id) {
+        MoviesApi.detailedFilm(route.params.id)
+          .then(async (res) => {
+            if (isActive) {
+              setMovie(res.data)
+
+              const isFavorite = await hasMovie(res.data)
+              setIsFavoriteMovie(isFavorite)
+            }
+          })
+          .catch((err) => console.log(err))
+      }
     }
 
     if (isActive) {
@@ -113,6 +120,7 @@ export const Detail: React.FC = () => {
         />
         <Rate>{movie.vote_average}/10</Rate>
       </ContentArea>
+
       <ListGenres
         data={movie?.genres}
         renderItem={({ item }: App.Movies | any) => <Genre data={item} />}
@@ -120,6 +128,11 @@ export const Detail: React.FC = () => {
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item, index) => String(index)}
       />
+      <WhereWatchContainer>
+        <WhereWhatch onPress={navigateToPlatforms}>
+          <WhereWhatchTitle>Onde assistir</WhereWhatchTitle>
+        </WhereWhatch>
+      </WhereWatchContainer>
       <ScrollView style={{ marginTop: 20 }} showsVerticalScrollIndicator={false}>
         <Title>Descrição</Title>
         <Description>{movie.overview}</Description>

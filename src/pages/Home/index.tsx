@@ -20,8 +20,8 @@ import {
   SliderMovie
 } from './style'
 import { SliderItem } from '../../components/SliderItem'
-import { api, key } from '../../services/api'
 import { getListMovies, randomBanner } from '../../utils/movie'
+import MoviesApi from '../../services/api/MoviesApi'
 
 type DetailScreenProps = NativeStackNavigationProp<RootStackParamsList, 'Home'>
 
@@ -42,27 +42,9 @@ export const Home: React.FC = () => {
 
     const getMovies = async () => {
       const [nowData, popularData, topData] = await Promise.all([
-        api.get('/movie/now_playing', {
-          params: {
-            api_key: key,
-            language: 'pt-BR',
-            page: 1
-          }
-        }),
-        api.get('/movie/popular', {
-          params: {
-            api_key: key,
-            language: 'pt-BR',
-            page: 1
-          }
-        }),
-        api.get('/movie/top_rated', {
-          params: {
-            api_key: key,
-            language: 'pt-BR',
-            page: 1
-          }
-        })
+        MoviesApi.moviesInTheaters(),
+        MoviesApi.popularMovies(),
+        MoviesApi.topRatedMovies()
       ])
 
       if (isActive) {

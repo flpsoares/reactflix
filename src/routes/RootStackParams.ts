@@ -5,4 +5,7 @@ export type RootStackParamsList = {
     name: string
   }
   Movies: undefined
+  Platform: {
+    id: number | undefined
+  }
 }

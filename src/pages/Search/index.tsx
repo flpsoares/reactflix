@@ -7,6 +7,7 @@ import { api, key } from '../../services/api'
 import { RootStackParamsList } from '../../routes/RootStackParams'
 import { SearchItem } from '../../components/SearchItem'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import MoviesApi from '../../services/api/MoviesApi'
 
 type DetailScreenProps = NativeStackNavigationProp<RootStackParamsList, 'Search'>
 
@@ -27,21 +28,12 @@ export const Search: React.FC = () => {
     let isActive = true
 
     const getSearchMovie = async () => {
-      await api
-        .get('/search/movie', {
-          params: {
-            query: route.params.name,
-            api_key: key,
-            language: 'pt-BR',
-            page: 1
-          }
-        })
-        .then((res) => {
-          if (isActive) {
-            setMovie(res.data.results)
-            setLoading(false)
-          }
-        })
+      await MoviesApi.searchMovie(route.params.name).then((res) => {
+        if (isActive) {
+          setMovie(res.data.results)
+          setLoading(false)
+        }
+      })
     }
 
     getSearchMovie()
